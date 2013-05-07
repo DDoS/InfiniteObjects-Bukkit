@@ -8,11 +8,13 @@ setters:
   leaves:
     type: simple
     properties:
-      material: Jungle Leaves
+      material: Leaves
+      data: 3
   wood:
     type: simple
     properties:
-      material: Jungle Wood
+      material: Leaves
+      data: 3
 
 conditions:
   ground:
@@ -45,8 +47,8 @@ conditions:
       - Grass
       - Dirt
       - Stone
-      - Jungle Wood
-      - Jungle Leaves
+      - Log
+      - Leaves
 
 instructions:
   leafPod:

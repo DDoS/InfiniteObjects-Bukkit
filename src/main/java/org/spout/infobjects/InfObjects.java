@@ -26,17 +26,13 @@
  */
 package org.spout.infobjects;
 
-import org.spout.api.command.CommandRegistrationsFactory;
-import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
-import org.spout.api.command.annotated.SimpleAnnotatedCommandExecutorFactory;
-import org.spout.api.command.annotated.SimpleInjector;
-import org.spout.api.plugin.CommonPlugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * The InfiniteObjects plugin. Keeps a static {@link IWGOManager} for the folder
  * "plugins/InfObjects/IWGOs".
  */
-public class InfObjects extends CommonPlugin {
+public class InfObjects extends JavaPlugin {
 	private static final IWGOManager MANAGER = new IWGOManager("plugins/InfObjects/IWGOs", true);
 
 	@Override
@@ -47,9 +43,7 @@ public class InfObjects extends CommonPlugin {
 			getLogger().warning("Class \"org.spout.infobjects.function.RandomFunction\""
 					+ " couldn't be found. IWGO loading may fail");
 		}
-		final CommandRegistrationsFactory<Class<?>> commandRegFactory =
-				new AnnotatedCommandRegistrationFactory(getEngine(), new SimpleInjector(), new SimpleAnnotatedCommandExecutorFactory());
-		getEngine().getRootCommand().addSubCommands(this, IWGOCommands.class, commandRegFactory);
+		// TODO: register commands
 		MANAGER.loadIWGOs();
 		getLogger().info("Loaded " + MANAGER.getIWGOMap().size() + " IWGO(s)");
 		getLogger().info("v" + getDescription().getVersion() + " enabled");
@@ -59,11 +53,6 @@ public class InfObjects extends CommonPlugin {
 	public void onDisable() {
 		MANAGER.unloadIWGOs();
 		getLogger().info("disabled");
-	}
-
-	@Override
-	public void onReload() {
-		MANAGER.reloadIWGOs();
 	}
 
 	/**

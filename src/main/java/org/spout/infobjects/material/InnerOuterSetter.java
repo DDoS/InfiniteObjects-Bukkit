@@ -28,8 +28,8 @@ package org.spout.infobjects.material;
 
 import java.util.Map;
 
-import org.spout.api.geo.World;
-import org.spout.api.material.BlockMaterial;
+import org.bukkit.Material;
+import org.bukkit.World;
 
 import org.spout.infobjects.util.IWGOUtils;
 
@@ -37,9 +37,9 @@ import org.spout.infobjects.util.IWGOUtils;
  * A material setter for setting a different inner and outer material.
  */
 public class InnerOuterSetter extends MaterialSetter {
-	protected BlockMaterial inner;
+	protected Material inner;
 	protected short innerData;
-	protected BlockMaterial outer;
+	protected Material outer;
 	protected short outerData;
 
 	static {
@@ -94,9 +94,9 @@ public class InnerOuterSetter extends MaterialSetter {
 	@Override
 	public void setMaterial(World world, int x, int y, int z, boolean outer) {
 		if (outer) {
-			world.setBlockMaterial(x, y, z, this.outer, outerData == -1 ? this.outer.getData() : outerData, null);
+			world.getBlockAt(x, y, z).setTypeIdAndData(this.outer.getId(), (byte) (outerData == -1 ? 0 : outerData), true);
 		} else {
-			world.setBlockMaterial(x, y, z, inner, innerData == -1 ? inner.getData() : innerData, null);
+			world.getBlockAt(x, y, z).setTypeIdAndData(inner.getId(), (byte) (innerData == -1 ? 0 : innerData), true);
 		}
 	}
 

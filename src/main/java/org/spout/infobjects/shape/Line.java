@@ -29,8 +29,7 @@ package org.spout.infobjects.shape;
 import java.util.Map;
 import java.util.Random;
 
-import org.spout.api.geo.discrete.Point;
-import org.spout.api.util.BlockIterator;
+import org.bukkit.util.BlockIterator;
 
 import org.spout.infobjects.IWGO;
 import org.spout.infobjects.exception.ShapeLoadingException;
@@ -78,11 +77,14 @@ public class Line extends Shape {
 	 */
 	@Override
 	public void draw() {
-		final Point start = iwgo.transform(x.getValue(), y.getValue(), z.getValue());
-		final BlockIterator line = new BlockIterator(start, start.add(lengthX.getValue(),
-				lengthY.getValue(), lengthZ.getValue()));
+		final double lx = lengthX.getValue();
+		final double ly = lengthY.getValue();
+		final double lz = lengthZ.getValue();
+		final BlockIterator line = new BlockIterator(
+				iwgo.transform(x.getValue(), y.getValue(), z.getValue()), 0,
+				(int) Math.sqrt(lx * lx + ly * ly + lz * lz));
 		while (line.hasNext()) {
-			setter.setMaterial(line.next().getPosition(), true);
+			setter.setMaterial(line.next().getLocation(), true);
 		}
 	}
 

@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import org.spout.api.material.BlockMaterial;
+import org.bukkit.Material;
 
 import org.spout.infobjects.IWGO;
 import org.spout.infobjects.exception.ConditionLoadingException;
@@ -50,7 +50,7 @@ import org.spout.infobjects.value.Value;
 public abstract class Condition implements RandomOwner {
 	private static final TypeFactory<Condition> CONDITIONS = new TypeFactory<Condition>(IWGO.class);
 	protected final IWGO iwgo;
-	protected final Set<BlockMaterial> materials = new HashSet<BlockMaterial>();
+	protected final Set<Material> materials = new HashSet<Material>();
 	protected Value x;
 	protected Value y;
 	protected Value z;
@@ -189,7 +189,7 @@ public abstract class Condition implements RandomOwner {
 	 *
 	 * @param material The material to add
 	 */
-	public void addBlockMaterial(BlockMaterial material) {
+	public void addBlockMaterial(Material material) {
 		materials.add(material);
 	}
 
@@ -198,7 +198,7 @@ public abstract class Condition implements RandomOwner {
 	 *
 	 * @param material The material to remove
 	 */
-	public void removeMaterial(BlockMaterial material) {
+	public void removeMaterial(Material material) {
 		materials.remove(material);
 	}
 
@@ -207,7 +207,7 @@ public abstract class Condition implements RandomOwner {
 	 *
 	 * @return The materials as a set
 	 */
-	public Set<BlockMaterial> getMaterials() {
+	public Set<Material> getMaterials() {
 		return materials;
 	}
 
@@ -315,7 +315,7 @@ public abstract class Condition implements RandomOwner {
 		 * @return True or false depending on the mode and the presence or absence of the material
 		 * in the set
 		 */
-		public boolean check(BlockMaterial material, Set<BlockMaterial> materials) {
+		public boolean check(Material material, Set<Material> materials) {
 			switch (this) {
 				case INCLUDE:
 					return materials.contains(material);

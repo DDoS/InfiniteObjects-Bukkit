@@ -28,9 +28,8 @@ package org.spout.infobjects.material;
 
 import java.util.Map;
 
-import org.spout.api.geo.World;
-import org.spout.api.geo.discrete.Point;
-import org.spout.api.util.Named;
+import org.bukkit.Location;
+import org.bukkit.World;
 
 import org.spout.infobjects.util.TypeFactory;
 
@@ -40,7 +39,7 @@ import org.spout.infobjects.util.TypeFactory;
  * so the iWGO loader can recognize it. Make sure there's at least one constructor with the same
  * arguments as the one for this class, as it's the one that will be called for construction.
  */
-public abstract class MaterialSetter implements Named {
+public abstract class MaterialSetter {
 	private static final TypeFactory<MaterialSetter> SETTERS = new TypeFactory<MaterialSetter>(String.class);
 	private final String name;
 
@@ -71,7 +70,7 @@ public abstract class MaterialSetter implements Named {
 	 * @param pos The position at which to set the material
 	 * @param outer Whether or not the material is outside or inside the shape
 	 */
-	public void setMaterial(Point pos, boolean outer) {
+	public void setMaterial(Location pos, boolean outer) {
 		setMaterial(pos.getWorld(), pos.getBlockX(), pos.getBlockY(), pos.getBlockZ(), outer);
 	}
 
@@ -95,7 +94,6 @@ public abstract class MaterialSetter implements Named {
 	 *
 	 * @return The name
 	 */
-	@Override
 	public String getName() {
 		return name;
 	}

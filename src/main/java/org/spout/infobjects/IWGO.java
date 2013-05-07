@@ -33,17 +33,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import org.bukkit.Location;
 
-import org.spout.api.generator.WorldGeneratorObject;
-import org.spout.api.geo.World;
-import org.spout.api.geo.discrete.Point;
-import org.spout.api.math.GenericMath;
-import org.spout.api.math.IntVector3;
-import org.spout.api.util.Named;
+import org.bukkit.World;
 
 import org.spout.infobjects.condition.Condition;
 import org.spout.infobjects.instruction.Instruction;
 import org.spout.infobjects.material.MaterialSetter;
+import org.spout.infobjects.util.IntVector3;
 import org.spout.infobjects.util.RandomOwner;
 import org.spout.infobjects.variable.Variable;
 import org.spout.infobjects.variable.VariableSource;
@@ -53,10 +50,10 @@ import org.spout.infobjects.variable.VariableSource;
  * safe and must be synchronized externally. Alternatively more copies can be loaded using the {@link org.spout.infobjects.IWGOLoader}
  * class for unsynchronized thread local use.
  */
-public class IWGO extends WorldGeneratorObject implements VariableSource, Named, RandomOwner {
+public class IWGO implements VariableSource, RandomOwner {
 	private final String name;
 	private World world;
-	private final IntVector3 position = new IntVector3(0, 0, 0);
+	private final IntVector3 position = new IntVector3();
 	private final Map<String, Variable> variables = new LinkedHashMap<String, Variable>();
 	private final Map<String, MaterialSetter> setters = new HashMap<String, MaterialSetter>();
 	private final List<Condition> conditions = new ArrayList<Condition>();
@@ -80,7 +77,6 @@ public class IWGO extends WorldGeneratorObject implements VariableSource, Named,
 	 *
 	 * @return The iWGO's name
 	 */
-	@Override
 	public String getName() {
 		return name;
 	}
@@ -95,7 +91,6 @@ public class IWGO extends WorldGeneratorObject implements VariableSource, Named,
 	 * @param z The z coordinate
 	 * @return True if the object can be placed, false if otherwise
 	 */
-	@Override
 	public boolean canPlaceObject(World w, int x, int y, int z) {
 		world = w;
 		position.set(x, y, z);
@@ -116,7 +111,6 @@ public class IWGO extends WorldGeneratorObject implements VariableSource, Named,
 	 * @param y The y coordinate
 	 * @param z The z coordinate
 	 */
-	@Override
 	public void placeObject(World w, int x, int y, int z) {
 		world = w;
 		position.set(x, y, z);
@@ -176,8 +170,8 @@ public class IWGO extends WorldGeneratorObject implements VariableSource, Named,
 	 * @param zz The relative z coordinate
 	 * @return The absolute coordinates plus the world
 	 */
-	public Point transform(double xx, double yy, double zz) {
-		return transform(GenericMath.floor(xx), GenericMath.floor(yy), GenericMath.floor(zz));
+	public Location transform(double xx, double yy, double zz) {
+		return transform(Math.floor(xx), Math.floor(yy), Math.floor(zz));
 	}
 
 	/**
@@ -189,8 +183,8 @@ public class IWGO extends WorldGeneratorObject implements VariableSource, Named,
 	 * @param zz The relative z coordinate
 	 * @return The absolute coordinates plus the world
 	 */
-	public Point transform(int xx, int yy, int zz) {
-		return new Point(world, xx + position.getX(), yy + position.getY(), zz + position.getZ());
+	public Location transform(int xx, int yy, int zz) {
+		return new Location(world, xx + position.getX(), yy + position.getY(), zz + position.getZ());
 	}
 
 	/**
@@ -199,7 +193,7 @@ public class IWGO extends WorldGeneratorObject implements VariableSource, Named,
 	 * @param pos The relative point
 	 * @return The absolute point
 	 */
-	public Point transform(Point pos) {
+	public Location transform(Location pos) {
 		return pos.add(position.getX(), position.getY(), position.getZ());
 	}
 
@@ -286,8 +280,8 @@ public class IWGO extends WorldGeneratorObject implements VariableSource, Named,
 	}
 
 	/**
-	 * Gets the material setter map (mapped as name and material setter) from the iWGO. Changes
-	 * to this map are reflected in the iWGO.
+	 * Gets the material setter map (mapped as name and material setter) from the iWGO. Changes to
+	 * this map are reflected in the iWGO.
 	 *
 	 * @return The material setter map.
 	 */
@@ -353,8 +347,8 @@ public class IWGO extends WorldGeneratorObject implements VariableSource, Named,
 	}
 
 	/**
-	 * Gets the instruction map (mapped as name and instruction) from the iWGO. Changes to this
-	 * map are reflected in the iWGO.
+	 * Gets the instruction map (mapped as name and instruction) from the iWGO. Changes to this map
+	 * are reflected in the iWGO.
 	 *
 	 * @return The instruction map.
 	 */

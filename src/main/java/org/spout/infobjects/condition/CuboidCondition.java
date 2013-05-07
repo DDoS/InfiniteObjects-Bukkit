@@ -29,7 +29,7 @@ package org.spout.infobjects.condition;
 import java.util.Map;
 import java.util.Random;
 
-import org.spout.api.geo.discrete.Point;
+import org.bukkit.Location;
 
 import org.spout.infobjects.IWGO;
 import org.spout.infobjects.exception.ConditionLoadingException;
@@ -86,9 +86,8 @@ public class CuboidCondition extends Condition {
 		for (int xx = 0; xx < sizeX; xx++) {
 			for (int yy = 0; yy < sizeY; yy++) {
 				for (int zz = 0; zz < sizeZ; zz++) {
-					final Point pos = iwgo.transform(px + xx, py + yy, pz + zz);
-					if (!mode.check(pos.getWorld().getBlockMaterial(pos.getBlockX(),
-							pos.getBlockY(), pos.getBlockZ()), materials)) {
+					final Location pos = iwgo.transform(px + xx, py + yy, pz + zz);
+					if (!mode.check(pos.getWorld().getBlockAt(pos).getType(), materials)) {
 						return false;
 					}
 				}

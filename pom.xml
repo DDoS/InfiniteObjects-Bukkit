@@ -64,6 +64,10 @@
 				<updatePolicy>always</updatePolicy>
 			</snapshots>
 		</repository>
+		<repository>
+			<id>bukkit-repo</id>
+			<url>http://repo.bukkit.org/content/groups/public/</url>
+		</repository>
 	</repositories>
 
 	<!-- Build plugin repositories -->
@@ -92,9 +96,9 @@
 	<dependencies>
 		<!-- Provided by third-party -->
 		<dependency>
-			<groupId>org.spout</groupId>
-			<artifactId>spoutapi</artifactId>
-			<version>dev-SNAPSHOT</version>
+			<groupId>org.bukkit</groupId>
+			<artifactId>bukkit</artifactId>
+			<version>1.5.2-R0.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- Included in the final JAR -->

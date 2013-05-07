@@ -29,7 +29,7 @@ package org.spout.infobjects.material;
 import java.util.Map;
 import java.util.Random;
 
-import org.spout.api.geo.World;
+import org.bukkit.World;
 
 import org.spout.infobjects.util.RandomOwner;
 

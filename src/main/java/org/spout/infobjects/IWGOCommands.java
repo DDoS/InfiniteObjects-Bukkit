@@ -26,66 +26,18 @@
  */
 package org.spout.infobjects;
 
-import org.spout.api.command.CommandContext;
-import org.spout.api.command.CommandSource;
-import org.spout.api.command.annotated.Command;
-import org.spout.api.command.annotated.CommandPermissions;
-import org.spout.api.entity.Player;
-import org.spout.api.exception.CommandException;
-import org.spout.api.geo.World;
-import org.spout.api.geo.discrete.Point;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 
 /**
  * Commands for the InfiniteObjects plugin. These are mostly designed for testing and
  * administration.
  */
-public class IWGOCommands {
-	/**
-	 * Attempts to place an iWGO at the player location. Placement checks can be disabled with the
-	 * -f flag.
-	 *
-	 * @param args The command arguments
-	 * @param source The source of the command
-	 * @throws CommandException If the the iWGO name couldn't be found or the source isn't a player.
-	 */
-	@Command(aliases = {"iwgo"}, usage = "<name>", flags = "f", desc = "Spawn a IWGO at your location. Use -f to ignore conditions check", min = 1, max = 2)
-	@CommandPermissions("infobjects.place")
-	public void placeIWGO(CommandContext args, CommandSource source) throws CommandException {
-		if (!(source instanceof Player)) {
-			throw new CommandException("You must be a player.");
-		}
-		final IWGO iwgo = InfObjects.getIWGOManager().getIWGO(args.getString(0));
-		if (iwgo == null) {
-			throw new CommandException("Invalid IWGO name.");
-		}
-		final Player player = (Player) source;
-		final Point loc = player.getScene().getPosition();
-		final World world = loc.getWorld();
-		final int x = loc.getBlockX();
-		final int y = loc.getBlockY();
-		final int z = loc.getBlockZ();
-		final boolean force = args.hasFlag('f');
-		if (!iwgo.canPlaceObject(world, x, y, z)) {
-			player.sendMessage("Couldn't place the IWGO.");
-			if (!force) {
-				return;
-			}
-			player.sendMessage("Forcing placement.");
-		}
-		iwgo.placeObject(world, x, y, z);
-		iwgo.randomize();
-	}
-
-	/**
-	 * Reloads the plugin's static iWGO manager.
-	 *
-	 * @param args The command arguments
-	 * @param source The source of the command
-	 */
-	@Command(aliases = {"reloadiwgos"}, desc = "Reload the IWGOs")
-	@CommandPermissions("infobjects.reload")
-	public void reloadIWGOs(CommandContext args, CommandSource source) {
-		InfObjects.getIWGOManager().reloadIWGOs();
-		source.sendMessage("Reloaded " + InfObjects.getIWGOManager().getIWGOMap().size() + " IWGO(s) successfully.");
+public class IWGOCommands implements CommandExecutor {
+	@Override
+	public boolean onCommand(CommandSender cs, Command cmnd, String string, String[] strings) {
+		// TODO: redo commands
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 }

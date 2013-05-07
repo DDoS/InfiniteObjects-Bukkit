@@ -26,14 +26,12 @@
  */
 package org.spout.infobjects.variable;
 
-import org.spout.api.util.Named;
-
 import org.spout.infobjects.value.Value;
 
 /**
  * Represents a variable, which is a named {@link org.spout.infobjects.value.Value}.
  */
-public class Variable implements Value, Named {
+public class Variable implements Value {
 	private final String name;
 	private final Value value;
 
@@ -81,7 +79,6 @@ public class Variable implements Value, Named {
 	 *
 	 * @return The variable name
 	 */
-	@Override
 	public String getName() {
 		return name;
 	}

@@ -27,13 +27,17 @@
 package org.spout.infobjects;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.powermock.api.mockito.PowerMockito;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import org.spout.api.material.BlockMaterial;
+import org.bukkit.Bukkit;
+import org.bukkit.Server;
 
 import org.spout.infobjects.condition.Condition;
 import org.spout.infobjects.instruction.BlockInstruction;
@@ -48,8 +52,15 @@ import org.spout.infobjects.variable.Variable;
 public class IWGOTest {
 	@Before
 	public void before() throws Exception {
-		EngineFaker.setupEngine();
-		initTestMaterials();
+		final Server server = PowerMockito.mock(Server.class);
+		PowerMockito.when(server, Server.class.getMethod("getLogger", (Class[]) null)).
+				withNoArguments().thenReturn(new Logger("InfObjects.Tests", null) {
+			@Override
+			public void log(Level level, String string) {
+				System.out.println("[" + level.getLocalizedName() + "] " + string);
+			}
+		});
+		Bukkit.setServer(server);
 	}
 
 	@Test
@@ -114,27 +125,5 @@ public class IWGOTest {
 			System.out.println("\t--------------------");
 		}
 		System.out.println();
-	}
-
-	private void initTestMaterials() throws Exception {
-		final String[] testMaterials = new String[]{
-			"Jungle Leaves",
-			"Jungle Wood",
-			"Stone",
-			"Dirt",
-			"Grass",
-			"Water"
-		};
-		final Constructor constructor = TestMaterial.class.getDeclaredConstructor(String.class);
-		constructor.setAccessible(true);
-		for (String testMaterial : testMaterials) {
-			constructor.newInstance(testMaterial);
-		}
-	}
-
-	private static class TestMaterial extends BlockMaterial {
-		private TestMaterial(String name) {
-			super(name);
-		}
 	}
 }

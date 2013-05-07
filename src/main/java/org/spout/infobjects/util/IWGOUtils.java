@@ -30,10 +30,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import org.spout.api.material.BlockMaterial;
-import org.spout.api.material.Material;
-import org.spout.api.material.MaterialRegistry;
-import org.spout.api.util.config.ConfigurationNode;
+import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 
 /**
  * Utility methods for InfinteObjects.
@@ -85,12 +83,11 @@ public class IWGOUtils {
 	 * @param node The node to convert
 	 * @return The node's children as a string, string map
 	 */
-	public static Map<String, String> toStringMap(ConfigurationNode node) {
+	public static Map<String, String> toStringMap(ConfigurationSection node) {
 		final Map<String, String> propertiesMap = new HashMap<String, String>();
 		for (String key : node.getKeys(true)) {
-			final ConfigurationNode n = node.getNode(key);
-			if (!n.hasChildren()) {
-				propertiesMap.put(key, n.getString());
+			if (!node.isConfigurationSection(key)) {
+				propertiesMap.put(key, node.getString(key));
 			}
 		}
 		return propertiesMap;
@@ -104,14 +101,14 @@ public class IWGOUtils {
 	 * @throws IllegalArgumentException If the name is null or an empty string, if the name isn't
 	 * associated to a material
 	 */
-	public static BlockMaterial tryGetBlockMaterial(String name) {
+	public static Material tryGetBlockMaterial(String name) {
 		if (name == null || name.trim().equals("")) {
 			throw new IllegalArgumentException("Name can not be null or empty");
 		}
-		final Material material = MaterialRegistry.get(name);
-		if (material == null || !(material instanceof BlockMaterial)) {
+		final Material material = Material.getMaterial(name.toUpperCase());
+		if (material == null || !material.isBlock()) {
 			throw new IllegalArgumentException("\"" + name + "\" is not a block material");
 		}
-		return (BlockMaterial) material;
+		return material;
 	}
 }

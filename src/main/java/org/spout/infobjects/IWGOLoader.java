@@ -30,10 +30,10 @@ import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.spout.api.Spout;
-import org.spout.api.util.config.Configuration;
-import org.spout.api.util.config.ConfigurationNode;
-import org.spout.api.util.config.yaml.YamlConfiguration;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import org.spout.infobjects.condition.Condition;
 import org.spout.infobjects.exception.ConditionLoadingException;
@@ -85,7 +85,7 @@ public class IWGOLoader {
 	 * @throws IWGOLoadingException If loading of the iWGO fails
 	 */
 	public static IWGO loadIWGO(File file) throws IWGOLoadingException {
-		return loadIWGO(new YamlConfiguration(file), file.getPath());
+		return loadIWGO(YamlConfiguration.loadConfiguration(file), file.getPath());
 	}
 
 	/**
@@ -111,12 +111,11 @@ public class IWGOLoader {
 	 */
 	public static IWGO loadIWGO(Configuration config, String source) throws IWGOLoadingException {
 		try {
-			config.load();
-			final IWGO iwgo = new IWGO(config.getNode("name").getString());
-			loadVariables(iwgo, config.getNode("variables"), iwgo);
-			loadMaterialSetters(iwgo, config.getNode("setters"));
-			loadConditions(iwgo, config.getNode("conditions"));
-			loadInstructions(iwgo, config.getNode("instructions"));
+			final IWGO iwgo = new IWGO(config.getString("name"));
+			loadVariables(iwgo, config.getConfigurationSection("variables"), iwgo);
+			loadMaterialSetters(iwgo, config.getConfigurationSection("setters"));
+			loadConditions(iwgo, config.getConfigurationSection("conditions"));
+			loadInstructions(iwgo, config.getConfigurationSection("instructions"));
 			iwgo.randomize();
 			return iwgo;
 		} catch (Exception ex) {
@@ -133,11 +132,11 @@ public class IWGOLoader {
 	 * already loaded variables)
 	 * @throws VariableLoadingException If variable loading fails
 	 */
-	public static void loadVariables(VariableSource destination, ConfigurationNode variableNode,
+	public static void loadVariables(VariableSource destination, ConfigurationSection variableNode,
 			VariableSource... sources) throws VariableLoadingException {
 		for (String key : variableNode.getKeys(false)) {
 			try {
-				destination.addVariable(new Variable(key, ValueParser.parse(variableNode.getNode(key).getString(), sources)));
+				destination.addVariable(new Variable(key, ValueParser.parse(variableNode.getString(key), sources)));
 			} catch (Exception ex) {
 				throw new VariableLoadingException(key, ex);
 			}
@@ -151,14 +150,14 @@ public class IWGOLoader {
 	 * @param settersNode The configuration node with the material setter info
 	 * @throws MaterialSetterLoadingException If material setter loading fails
 	 */
-	public static void loadMaterialSetters(IWGO iwgo, ConfigurationNode settersNode)
+	public static void loadMaterialSetters(IWGO iwgo, ConfigurationSection settersNode)
 			throws MaterialSetterLoadingException {
 		for (String key : settersNode.getKeys(false)) {
 			try {
-				final ConfigurationNode setterNode = settersNode.getNode(key);
+				final ConfigurationSection setterNode = settersNode.getConfigurationSection(key);
 				final MaterialSetter setter =
-						MaterialSetter.newMaterialSetter(setterNode.getNode("type").getString(), key);
-				setter.configure(IWGOUtils.toStringMap(setterNode.getNode("properties")));
+						MaterialSetter.newMaterialSetter(setterNode.getString("type"), key);
+				setter.configure(IWGOUtils.toStringMap(setterNode.getConfigurationSection("properties")));
 				iwgo.addMaterialSetter(setter);
 			} catch (Exception ex) {
 				throw new MaterialSetterLoadingException(key, ex);
@@ -173,14 +172,17 @@ public class IWGOLoader {
 	 * @param instructionsNode The configuration node with the instruction info
 	 * @throws InstructionLoadingException If instruction loading fails
 	 */
-	public static void loadInstructions(IWGO iwgo, ConfigurationNode instructionsNode)
+	public static void loadInstructions(IWGO iwgo, ConfigurationSection instructionsNode)
 			throws InstructionLoadingException {
 		for (String key : instructionsNode.getKeys(false)) {
 			try {
-				final ConfigurationNode instructionNode = instructionsNode.getNode(key);
+				final ConfigurationSection instructionNode = instructionsNode.getConfigurationSection(key);
 				final Instruction instruction =
-						Instruction.newInstruction(instructionNode.getNode("type").getString(), iwgo, key);
-				loadVariables(instruction, instructionNode.getNode("variables"), iwgo, instruction);
+						Instruction.newInstruction(instructionNode.getString("type"), iwgo, key);
+				final ConfigurationSection variableNode = instructionNode.getConfigurationSection("variables");
+				if (variableNode != null) {
+					loadVariables(instruction, variableNode, iwgo, instruction);
+				}
 				if (instruction instanceof ShapeInstruction) {
 					loadShapeInstruction((ShapeInstruction) instruction, instructionNode);
 				} else if (instruction instanceof RepeatInstruction) {
@@ -195,19 +197,19 @@ public class IWGOLoader {
 		}
 	}
 
-	private static void loadShapeInstruction(ShapeInstruction instruction, ConfigurationNode placeNode)
+	private static void loadShapeInstruction(ShapeInstruction instruction, ConfigurationSection placeNode)
 			throws ShapeLoadingException {
 		final IWGO iwgo = instruction.getIWGO();
-		final ConfigurationNode shapesNode = placeNode.getNode("shapes");
+		final ConfigurationSection shapesNode = placeNode.getConfigurationSection("shapes");
 		for (String key : shapesNode.getKeys(false)) {
 			try {
-				final ConfigurationNode shapeNode = shapesNode.getNode(key);
-				final Shape shape = Shape.newShape(shapeNode.getNode("type").getString(), iwgo);
-				shape.setSize(ValueParser.parse(IWGOUtils.toStringMap(shapeNode.getNode("size")), iwgo, instruction));
-				shape.setPosition(ValueParser.parse(IWGOUtils.toStringMap(shapeNode.getNode("position")), iwgo, instruction));
-				final MaterialSetter setter = iwgo.getMaterialSetter(shapeNode.getNode("material").getString());
+				final ConfigurationSection shapeNode = shapesNode.getConfigurationSection(key);
+				final Shape shape = Shape.newShape(shapeNode.getString("type"), iwgo);
+				shape.setSize(ValueParser.parse(IWGOUtils.toStringMap(shapeNode.getConfigurationSection("size")), iwgo, instruction));
+				shape.setPosition(ValueParser.parse(IWGOUtils.toStringMap(shapeNode.getConfigurationSection("position")), iwgo, instruction));
+				final MaterialSetter setter = iwgo.getMaterialSetter(shapeNode.getString("material"));
 				if (setter == null) {
-					throw new ShapeLoadingException("Material setter \"" + shapeNode.getNode("material").getString()
+					throw new ShapeLoadingException("Material setter \"" + shapeNode.getString("material")
 							+ "\" does not exist");
 				}
 				shape.setMaterialSetter(setter);
@@ -218,41 +220,41 @@ public class IWGOLoader {
 		}
 	}
 
-	private static void loadRepeatInstruction(RepeatInstruction instruction, ConfigurationNode repeatNode)
+	private static void loadRepeatInstruction(RepeatInstruction instruction, ConfigurationSection repeatNode)
 			throws InstructionLoadingException {
 		final IWGO iwgo = instruction.getIWGO();
-		final Instruction repeat = iwgo.getInstruction(repeatNode.getNode("repeat").getString());
+		final Instruction repeat = iwgo.getInstruction(repeatNode.getString("repeat"));
 		if (repeat == null) {
 			throw new InstructionLoadingException("Repeat instruction \""
-					+ repeatNode.getNode("repeat").getString() + "\" does not exist");
+					+ repeatNode.getString("repeat") + "\" does not exist");
 		}
 		instruction.setRepeat(repeat);
-		instruction.setTimes(ValueParser.parse(repeatNode.getNode("times").getString(), iwgo, instruction));
-		final ConfigurationNode incrementNode = repeatNode.getNode("increment");
+		instruction.setTimes(ValueParser.parse(repeatNode.getString("times"), iwgo, instruction));
+		final ConfigurationSection incrementNode = repeatNode.getConfigurationSection("increment");
 		for (String key : incrementNode.getKeys(false)) {
 			final Variable increment = iwgo.getVariable(key);
 			if (increment == null) {
 				throw new InstructionLoadingException("Increment variable \"" + key + "\" does not exist");
 			}
 			instruction.addIncrementableValue(key, new IncrementableValue(increment.getRawValue(),
-					ValueParser.parse(incrementNode.getNode(key).getString(), iwgo, instruction)));
+					ValueParser.parse(incrementNode.getString(key), iwgo, instruction)));
 		}
 	}
 
-	private static void loadBlockInstruction(BlockInstruction instruction, ConfigurationNode blockNode)
+	private static void loadBlockInstruction(BlockInstruction instruction, ConfigurationSection blockNode)
 			throws InstructionLoadingException {
 		final IWGO iwgo = instruction.getIWGO();
-		final ConfigurationNode positionNode = blockNode.getNode("position");
-		instruction.setX(ValueParser.parse(positionNode.getNode("x").getString(), iwgo, instruction));
-		instruction.setY(ValueParser.parse(positionNode.getNode("y").getString(), iwgo, instruction));
-		instruction.setZ(ValueParser.parse(positionNode.getNode("z").getString(), iwgo, instruction));
-		final MaterialSetter setter = iwgo.getMaterialSetter(blockNode.getNode("material").getString());
+		final ConfigurationSection positionNode = blockNode.getConfigurationSection("position");
+		instruction.setX(ValueParser.parse(positionNode.getString("x"), iwgo, instruction));
+		instruction.setY(ValueParser.parse(positionNode.getString("y"), iwgo, instruction));
+		instruction.setZ(ValueParser.parse(positionNode.getString("z"), iwgo, instruction));
+		final MaterialSetter setter = iwgo.getMaterialSetter(blockNode.getString("material"));
 		if (setter == null) {
-			throw new InstructionLoadingException("Material setter \"" + blockNode.getNode("material").getString()
+			throw new InstructionLoadingException("Material setter \"" + blockNode.getString("material")
 					+ "\" does not exist");
 		}
 		instruction.setMaterialSetter(setter);
-		instruction.setOuter(Boolean.parseBoolean(blockNode.getNode("outer").getString()));
+		instruction.setOuter(Boolean.parseBoolean(blockNode.getString("outer")));
 	}
 
 	/**
@@ -262,16 +264,16 @@ public class IWGOLoader {
 	 * @param conditionsNode The configuration node with the condition info
 	 * @throws ConditionLoadingException If condition loading fails
 	 */
-	public static void loadConditions(IWGO iwgo, ConfigurationNode conditionsNode)
+	public static void loadConditions(IWGO iwgo, ConfigurationSection conditionsNode)
 			throws ConditionLoadingException {
 		for (String key : conditionsNode.getKeys(false)) {
 			try {
-				final ConfigurationNode conditionNode = conditionsNode.getNode(key);
-				final Condition condition = Condition.newCondition(conditionNode.getNode("shape").getString(), iwgo);
-				condition.setMode(Condition.ConditionMode.valueOf(conditionNode.getNode("mode").getString().toUpperCase()));
-				condition.setSize(ValueParser.parse(IWGOUtils.toStringMap(conditionNode.getNode("size")), iwgo));
-				condition.setPosition(ValueParser.parse(IWGOUtils.toStringMap(conditionNode.getNode("position")), iwgo));
-				for (String name : conditionNode.getNode("check").getStringList()) {
+				final ConfigurationSection conditionNode = conditionsNode.getConfigurationSection(key);
+				final Condition condition = Condition.newCondition(conditionNode.getString("shape"), iwgo);
+				condition.setMode(Condition.ConditionMode.valueOf(conditionNode.getString("mode").toUpperCase()));
+				condition.setSize(ValueParser.parse(IWGOUtils.toStringMap(conditionNode.getConfigurationSection("size")), iwgo));
+				condition.setPosition(ValueParser.parse(IWGOUtils.toStringMap(conditionNode.getConfigurationSection("position")), iwgo));
+				for (String name : conditionNode.getStringList("check")) {
 					condition.addBlockMaterial(IWGOUtils.tryGetBlockMaterial(name));
 				}
 				iwgo.addCondition(condition);
@@ -282,13 +284,13 @@ public class IWGOLoader {
 	}
 
 	/**
-	 * Logs iWGO loading exceptions to the Spout default logger (as defined by {@link org.spout.api.Spout#getLogger()})
+	 * Logs iWGO loading exceptions to the Bukkit default logger (as defined by {@link org.bukkit.Bukkit#getLogger()})
 	 * in a user friendly manner.
 	 *
 	 * @param exception The exception to log
 	 */
 	public static void logIWGOLoadingException(IWGOLoadingException exception) {
-		logIWGOLoadingException(Spout.getLogger(), exception);
+		logIWGOLoadingException(Bukkit.getLogger(), exception);
 	}
 
 	/**
@@ -301,6 +303,7 @@ public class IWGOLoader {
 		logger.log(Level.WARNING, "------------------------");
 		logger.log(Level.WARNING, "| IWGO LOADING FAILURE |");
 		logger.log(Level.WARNING, "------------------------");
+		exception.printStackTrace();
 		Throwable cause = exception;
 		int tabCount = 0;
 		do {
