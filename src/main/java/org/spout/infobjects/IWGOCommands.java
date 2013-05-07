@@ -35,10 +35,19 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * Commands for the InfiniteObjects plugin. These are mostly designed for testing and
- * administration.
+ * Commands for the InfiniteObjects plugin. These are mostly designed for
+ * testing and administration.
  */
 public class IWGOCommands implements CommandExecutor {
+	/**
+	 * Executes the "iwgo" and "reloadiwgos" commands.
+	 *
+	 * @param sender The sender of the command
+	 * @param command The command to process
+	 * @param label The string used to invoke the command
+	 * @param args The arguments of the command
+	 * @return True if the command was processed successfully, false if not
+	 */
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		final String cmd = command.getName();
@@ -61,7 +70,7 @@ public class IWGOCommands implements CommandExecutor {
 				return true;
 			}
 			final boolean force;
-			if (args.length > 1 && args[1].equalsIgnoreCase("true")) {
+			if (args.length > 1 && args[1].equalsIgnoreCase("force")) {
 				force = true;
 			} else {
 				force = false;
@@ -78,6 +87,7 @@ public class IWGOCommands implements CommandExecutor {
 			} else {
 				warn(sender, "Can't place the iWGO here.");
 			}
+			return true;
 		}
 		return false;
 	}

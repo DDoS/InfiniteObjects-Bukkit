@@ -28,8 +28,10 @@ package org.spout.infobjects.shape;
 
 import java.util.Map;
 import java.util.Random;
+import org.bukkit.Location;
 
 import org.bukkit.util.BlockIterator;
+import org.bukkit.util.Vector;
 
 import org.spout.infobjects.IWGO;
 import org.spout.infobjects.exception.ShapeLoadingException;
@@ -77,12 +79,11 @@ public class Line extends Shape {
 	 */
 	@Override
 	public void draw() {
-		final double lx = lengthX.getValue();
-		final double ly = lengthY.getValue();
-		final double lz = lengthZ.getValue();
-		final BlockIterator line = new BlockIterator(
-				iwgo.transform(x.getValue(), y.getValue(), z.getValue()), 0,
-				(int) Math.sqrt(lx * lx + ly * ly + lz * lz));
+		final Location position = iwgo.transform(x.getValue(), y.getValue(), z.getValue());
+		final Vector start = position.toVector();
+		final Vector size = new Vector(lengthX.getValue(), lengthY.getValue(), lengthZ.getValue());
+		final double distance = size.length();
+		final BlockIterator line = new BlockIterator(position.getWorld(), start, size.multiply(1 / distance), 0, (int) distance);
 		while (line.hasNext()) {
 			setter.setMaterial(line.next().getLocation(), true);
 		}
@@ -100,8 +101,8 @@ public class Line extends Shape {
 	}
 
 	/**
-	 * Sets the random for each size value if they implement {@link org.spout.infobjects.util.RandomOwner}.
-	 * Calls the super method.
+	 * Sets the random for each size value if they implement
+	 * {@link org.spout.infobjects.util.RandomOwner}. Calls the super method.
 	 *
 	 * @param random The random to use
 	 */

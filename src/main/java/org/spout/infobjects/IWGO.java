@@ -33,8 +33,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import org.bukkit.Location;
 
+import org.bukkit.Location;
 import org.bukkit.World;
 
 import org.spout.infobjects.condition.Condition;
@@ -47,8 +47,8 @@ import org.spout.infobjects.variable.VariableSource;
 
 /**
  * A user defined WorldGeneratorObject. This WGO is loaded from a configuration. It is not thread
- * safe and must be synchronized externally. Alternatively more copies can be loaded using the {@link org.spout.infobjects.IWGOLoader}
- * class for unsynchronized thread local use.
+ * safe and must be synchronized externally. Alternatively more copies can be loaded using the
+ * {@link org.spout.infobjects.IWGOLoader} class for unsynchronized thread local use.
  */
 public class IWGO implements VariableSource, RandomOwner {
 	private final String name;
@@ -60,8 +60,8 @@ public class IWGO implements VariableSource, RandomOwner {
 	private final Map<String, Instruction> instructions = new LinkedHashMap<String, Instruction>();
 
 	/**
-	 * Constructs a new iWGO. To create a new iWGO, load it using {@link org.spout.infobjects.IWGOLoader}
-	 * from a configuration.
+	 * Constructs a new iWGO. To create a new iWGO, load it using
+	 * {@link org.spout.infobjects.IWGOLoader} from a configuration.
 	 *
 	 * @param name The name of the iWGO
 	 */
@@ -171,7 +171,7 @@ public class IWGO implements VariableSource, RandomOwner {
 	 * @return The absolute coordinates plus the world
 	 */
 	public Location transform(double xx, double yy, double zz) {
-		return transform(Math.floor(xx), Math.floor(yy), Math.floor(zz));
+		return transform((int) Math.floor(xx), (int) Math.floor(yy), (int) Math.floor(zz));
 	}
 
 	/**

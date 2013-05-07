@@ -1,16 +1,16 @@
 name: InfObjects
-main: org.spout.infobjects.InfObjectsPlugin
+main: org.spout.infobjects.InfObjects
 version: 0.0.1
 author: SpoutDev
 commands:
     iwgo:
-       description: Place an iWGO
-       usage: /iwgo name [force]
-       permission: infobject.iwgo
-     reloadiwgos
-       description: Reload the iWGOs
-       usage: /reloadiwgos
-       permission: infobject.reload
+        description: Place an iWGO
+        usage: /iwgo name [force]
+        permission: infobject.iwgo
+    reloadiwgos:
+        description: Reload the iWGOs
+        usage: /reloadiwgos
+        permission: infobject.reload
 
 permissions:
     infobject.iwgo:

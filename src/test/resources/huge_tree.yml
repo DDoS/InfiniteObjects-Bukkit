@@ -1,4 +1,4 @@
-name: tree
+name: huge_tree
 
 variables:
   height: ranI=25-30
@@ -6,14 +6,20 @@ variables:
 
 setters:
   leaves:
-    type: simple
+    type: random-inner-outer
     properties:
-      material: Leaves
-      data: 3
+      inner:
+        material: Leaves
+        data: 3
+        odd: 100
+      outer:
+        material: Leaves
+        data: 3
+        odd: 75
   wood:
     type: simple
     properties:
-      material: Leaves
+      material: Log
       data: 3
 
 conditions:
@@ -40,7 +46,7 @@ conditions:
       z: 6
     position:
       x: -2
-      y: 2
+      y: 0
       z: -2
     check:
       - Water
