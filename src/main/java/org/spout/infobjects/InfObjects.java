@@ -43,7 +43,9 @@ public class InfObjects extends JavaPlugin {
 			getLogger().warning("Class \"org.spout.infobjects.function.RandomFunction\""
 					+ " couldn't be found. IWGO loading may fail");
 		}
-		// TODO: register commands
+		final IWGOCommands commandHandler = new IWGOCommands();
+		getCommand("iwgo").setExecutor(commandHandler);
+		getCommand("reloadiwgos").setExecutor(commandHandler);
 		MANAGER.loadIWGOs();
 		getLogger().info("Loaded " + MANAGER.getIWGOMap().size() + " IWGO(s)");
 		getLogger().info("v" + getDescription().getVersion() + " enabled");

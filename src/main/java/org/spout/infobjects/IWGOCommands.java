@@ -26,9 +26,13 @@
  */
 package org.spout.infobjects;
 
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 /**
  * Commands for the InfiniteObjects plugin. These are mostly designed for testing and
@@ -36,8 +40,53 @@ import org.bukkit.command.CommandSender;
  */
 public class IWGOCommands implements CommandExecutor {
 	@Override
-	public boolean onCommand(CommandSender cs, Command cmnd, String string, String[] strings) {
-		// TODO: redo commands
-		throw new UnsupportedOperationException("Not supported yet.");
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		final String cmd = command.getName();
+		if (cmd.equals("reloadiwgos")) {
+			final IWGOManager manager = InfObjects.getIWGOManager();
+			manager.reloadIWGOs();
+			tell(sender, manager.getIWGOs().size() + " iWGO(s) reloaded.");
+			return true;
+		} else if (cmd.equals("iwgo")) {
+			if (!(sender instanceof Player)) {
+				warn(sender, "You need to be a player to use this command.");
+				return true;
+			}
+			if (args.length < 1) {
+				return false;
+			}
+			final IWGO iwgo = InfObjects.getIWGOManager().getIWGO(args[0]);
+			if (iwgo == null) {
+				warn(sender, "Couldn't find an iWGO named \"" + args[0] + "\"");
+				return true;
+			}
+			final boolean force;
+			if (args.length > 1 && args[1].equalsIgnoreCase("true")) {
+				force = true;
+			} else {
+				force = false;
+			}
+			final Player player = (Player) sender;
+			final Location location = player.getLocation();
+			final World world = location.getWorld();
+			final int x = location.getBlockX();
+			final int y = location.getBlockY();
+			final int z = location.getBlockZ();
+			if (force || iwgo.canPlaceObject(world, x, y, z)) {
+				iwgo.placeObject(world, x, y, z);
+				tell(sender, "iWGO placed successfully.");
+			} else {
+				warn(sender, "Can't place the iWGO here.");
+			}
+		}
+		return false;
+	}
+
+	private static void tell(CommandSender sender, String msg) {
+		sender.sendMessage(ChatColor.GOLD + "[InfObjects] " + ChatColor.WHITE + msg);
+	}
+
+	private static void warn(CommandSender sender, String msg) {
+		sender.sendMessage(ChatColor.GOLD + "[InfObjects] " + ChatColor.DARK_RED + msg);
 	}
 }
