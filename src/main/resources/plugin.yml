@@ -11,3 +11,11 @@ commands:
        description: Reload the iWGOs
        usage: /reloadiwgos
        permission: infobject.reload
+
+permissions:
+    infobject.iwgo:
+        description: Allows to place an iWGO
+        default: op
+    infobject.reload:
+       description: Allows to reload the iWGO
+       default: op
