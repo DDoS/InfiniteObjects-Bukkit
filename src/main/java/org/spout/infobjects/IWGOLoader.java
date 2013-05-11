@@ -40,16 +40,9 @@ import org.spout.infobjects.exception.ConditionLoadingException;
 import org.spout.infobjects.exception.IWGOLoadingException;
 import org.spout.infobjects.exception.InstructionLoadingException;
 import org.spout.infobjects.exception.MaterialSetterLoadingException;
-import org.spout.infobjects.exception.ShapeLoadingException;
 import org.spout.infobjects.exception.VariableLoadingException;
-import org.spout.infobjects.instruction.BlockInstruction;
 import org.spout.infobjects.instruction.Instruction;
-import org.spout.infobjects.instruction.ShapeInstruction;
-import org.spout.infobjects.instruction.RepeatInstruction;
 import org.spout.infobjects.material.MaterialSetter;
-import org.spout.infobjects.shape.Shape;
-import org.spout.infobjects.util.IWGOUtils;
-import org.spout.infobjects.value.IncrementableValue;
 import org.spout.infobjects.value.ValueParser;
 import org.spout.infobjects.variable.Variable;
 import org.spout.infobjects.variable.VariableSource;
@@ -156,8 +149,8 @@ public class IWGOLoader {
 			try {
 				final ConfigurationSection setterNode = settersNode.getConfigurationSection(key);
 				final MaterialSetter setter =
-						MaterialSetter.newMaterialSetter(setterNode.getString("type"), key);
-				setter.configure(IWGOUtils.toStringMap(setterNode.getConfigurationSection("properties")));
+						MaterialSetter.newMaterialSetter(setterNode.getNode("type").getString(), key);
+				setter.load(setterNode.getNode("properties"));
 				iwgo.addMaterialSetter(setter);
 			} catch (Exception ex) {
 				throw new MaterialSetterLoadingException(key, ex);
@@ -178,83 +171,14 @@ public class IWGOLoader {
 			try {
 				final ConfigurationSection instructionNode = instructionsNode.getConfigurationSection(key);
 				final Instruction instruction =
-						Instruction.newInstruction(instructionNode.getString("type"), iwgo, key);
-				final ConfigurationSection variableNode = instructionNode.getConfigurationSection("variables");
-				if (variableNode != null) {
-					loadVariables(instruction, variableNode, iwgo, instruction);
-				}
-				if (instruction instanceof ShapeInstruction) {
-					loadShapeInstruction((ShapeInstruction) instruction, instructionNode);
-				} else if (instruction instanceof RepeatInstruction) {
-					loadRepeatInstruction((RepeatInstruction) instruction, instructionNode);
-				} else if (instruction instanceof BlockInstruction) {
-					loadBlockInstruction((BlockInstruction) instruction, instructionNode);
-				}
+						Instruction.newInstruction(instructionNode.getNode("type").getString(), iwgo, key);
+				loadVariables(instruction, instructionNode.getNode("variables"), iwgo, instruction);
+				instruction.load(instructionNode.getNode("properties"));
 				iwgo.addInstruction(instruction);
 			} catch (Exception ex) {
 				throw new InstructionLoadingException(key, ex);
 			}
 		}
-	}
-
-	private static void loadShapeInstruction(ShapeInstruction instruction, ConfigurationSection placeNode)
-			throws ShapeLoadingException {
-		final IWGO iwgo = instruction.getIWGO();
-		final ConfigurationSection shapesNode = placeNode.getConfigurationSection("shapes");
-		for (String key : shapesNode.getKeys(false)) {
-			try {
-				final ConfigurationSection shapeNode = shapesNode.getConfigurationSection(key);
-				final Shape shape = Shape.newShape(shapeNode.getString("type"), iwgo);
-				shape.setSize(ValueParser.parse(IWGOUtils.toStringMap(shapeNode.getConfigurationSection("size")), iwgo, instruction));
-				shape.setPosition(ValueParser.parse(IWGOUtils.toStringMap(shapeNode.getConfigurationSection("position")), iwgo, instruction));
-				final MaterialSetter setter = iwgo.getMaterialSetter(shapeNode.getString("material"));
-				if (setter == null) {
-					throw new ShapeLoadingException("Material setter \"" + shapeNode.getString("material")
-							+ "\" does not exist");
-				}
-				shape.setMaterialSetter(setter);
-				instruction.addShape(shape);
-			} catch (Exception ex) {
-				throw new ShapeLoadingException(key, ex);
-			}
-		}
-	}
-
-	private static void loadRepeatInstruction(RepeatInstruction instruction, ConfigurationSection repeatNode)
-			throws InstructionLoadingException {
-		final IWGO iwgo = instruction.getIWGO();
-		final Instruction repeat = iwgo.getInstruction(repeatNode.getString("repeat"));
-		if (repeat == null) {
-			throw new InstructionLoadingException("Repeat instruction \""
-					+ repeatNode.getString("repeat") + "\" does not exist");
-		}
-		instruction.setRepeat(repeat);
-		instruction.setTimes(ValueParser.parse(repeatNode.getString("times"), iwgo, instruction));
-		final ConfigurationSection incrementNode = repeatNode.getConfigurationSection("increment");
-		for (String key : incrementNode.getKeys(false)) {
-			final Variable increment = iwgo.getVariable(key);
-			if (increment == null) {
-				throw new InstructionLoadingException("Increment variable \"" + key + "\" does not exist");
-			}
-			instruction.addIncrementableValue(key, new IncrementableValue(increment.getRawValue(),
-					ValueParser.parse(incrementNode.getString(key), iwgo, instruction)));
-		}
-	}
-
-	private static void loadBlockInstruction(BlockInstruction instruction, ConfigurationSection blockNode)
-			throws InstructionLoadingException {
-		final IWGO iwgo = instruction.getIWGO();
-		final ConfigurationSection positionNode = blockNode.getConfigurationSection("position");
-		instruction.setX(ValueParser.parse(positionNode.getString("x"), iwgo, instruction));
-		instruction.setY(ValueParser.parse(positionNode.getString("y"), iwgo, instruction));
-		instruction.setZ(ValueParser.parse(positionNode.getString("z"), iwgo, instruction));
-		final MaterialSetter setter = iwgo.getMaterialSetter(blockNode.getString("material"));
-		if (setter == null) {
-			throw new InstructionLoadingException("Material setter \"" + blockNode.getString("material")
-					+ "\" does not exist");
-		}
-		instruction.setMaterialSetter(setter);
-		instruction.setOuter(Boolean.parseBoolean(blockNode.getString("outer")));
 	}
 
 	/**
@@ -268,14 +192,9 @@ public class IWGOLoader {
 			throws ConditionLoadingException {
 		for (String key : conditionsNode.getKeys(false)) {
 			try {
-				final ConfigurationSection conditionNode = conditionsNode.getConfigurationSection(key);
-				final Condition condition = Condition.newCondition(conditionNode.getString("shape"), iwgo);
-				condition.setMode(Condition.ConditionMode.valueOf(conditionNode.getString("mode").toUpperCase()));
-				condition.setSize(ValueParser.parse(IWGOUtils.toStringMap(conditionNode.getConfigurationSection("size")), iwgo));
-				condition.setPosition(ValueParser.parse(IWGOUtils.toStringMap(conditionNode.getConfigurationSection("position")), iwgo));
-				for (String name : conditionNode.getStringList("check")) {
-					condition.addBlockMaterial(IWGOUtils.tryGetBlockMaterial(name));
-				}
+				final ConfigurationNode conditionNode = conditionsNode.getNode(key);
+				final Condition condition = Condition.newCondition(conditionNode.getNode("type").getString(), iwgo);
+				condition.load(conditionNode.getNode("properties"));
 				iwgo.addCondition(condition);
 			} catch (Exception ex) {
 				throw new ConditionLoadingException(key, ex);
