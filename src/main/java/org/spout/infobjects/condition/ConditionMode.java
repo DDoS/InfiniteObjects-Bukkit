@@ -27,7 +27,8 @@
 package org.spout.infobjects.condition;
 
 import java.util.Set;
-import org.spout.api.material.BlockMaterial;
+
+import org.bukkit.Material;
 
 /**
  * An enum with the modes a condition can have when checking the condition volume for materials. The
@@ -47,7 +48,7 @@ public enum ConditionMode {
 	 * @return True or false depending on the mode and the presence or absence of the material in
 	 * the set
 	 */
-	public boolean check(BlockMaterial material, Set<BlockMaterial> materials) {
+	public boolean check(Material material, Set<Material> materials) {
 		switch (this) {
 			case INCLUDE:
 				return materials.contains(material);

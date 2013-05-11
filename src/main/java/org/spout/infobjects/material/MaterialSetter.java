@@ -26,12 +26,11 @@
  */
 package org.spout.infobjects.material;
 
-import org.spout.api.geo.World;
-import org.spout.api.geo.discrete.Point;
-import org.spout.api.util.Named;
-import org.spout.api.util.config.ConfigurationNode;
-import org.spout.infobjects.util.ConfigurationLoadable;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 
+import org.spout.infobjects.util.ConfigurationLoadable;
 import org.spout.infobjects.util.TypeFactory;
 
 /**
@@ -41,7 +40,7 @@ import org.spout.infobjects.util.TypeFactory;
  * recognize it. Make sure there's at least one constructor with the same arguments as the one for
  * this class, as it's the one that will be called for construction.
  */
-public abstract class MaterialSetter implements ConfigurationLoadable, Named {
+public abstract class MaterialSetter implements ConfigurationLoadable {
 	private static final TypeFactory<MaterialSetter> SETTERS = new TypeFactory<MaterialSetter>(String.class);
 	private final String name;
 
@@ -62,7 +61,7 @@ public abstract class MaterialSetter implements ConfigurationLoadable, Named {
 	 * @param properties The properties as a string, string map
 	 */
 	@Override
-	public abstract void load(ConfigurationNode properties);
+	public abstract void load(ConfigurationSection properties);
 
 	/**
 	 * Sets a material at the point. The material depends on the material setter implementation and

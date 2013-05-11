@@ -28,7 +28,7 @@ package org.spout.infobjects.condition;
 
 import java.util.Random;
 
-import org.spout.api.util.config.ConfigurationNode;
+import org.bukkit.configuration.ConfigurationSection;
 
 import org.spout.infobjects.IWGO;
 import org.spout.infobjects.exception.ConditionLoadingException;
@@ -73,7 +73,7 @@ public abstract class Condition implements ConfigurationLoadable, RandomOwner {
 	 * @throws ConditionLoadingException If the loading fail
 	 */
 	@Override
-	public abstract void load(ConfigurationNode properties) throws ConditionLoadingException;
+	public abstract void load(ConfigurationSection properties) throws ConditionLoadingException;
 
 	/**
 	 * An abstract method which is implemented by the extending class. Returns true if the condition

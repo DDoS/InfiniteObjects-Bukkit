@@ -28,8 +28,8 @@ package org.spout.infobjects.material;
 
 import java.util.Random;
 
-import org.spout.api.geo.World;
-import org.spout.api.util.config.ConfigurationNode;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 
 import org.spout.infobjects.util.RandomOwner;
 
@@ -62,10 +62,10 @@ public class RandomInnerOuterSetter extends InnerOuterSetter implements RandomOw
 	 * @param properties The property map as a string, string map.
 	 */
 	@Override
-	public void load(ConfigurationNode properties) {
+	public void load(ConfigurationSection properties) {
 		super.load(properties);
-		innerOdd = properties.getNode("inner", "odd").getByte();
-		outerOdd = properties.getNode("outer", "odd").getByte();
+		innerOdd = (byte) properties.getInt("inner.odd", 100);
+		outerOdd = (byte) properties.getInt("outer.odd", 100);
 	}
 
 	/**

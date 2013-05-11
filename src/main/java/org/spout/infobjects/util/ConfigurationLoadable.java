@@ -26,7 +26,8 @@
  */
 package org.spout.infobjects.util;
 
-import org.spout.api.util.config.ConfigurationNode;
+import org.bukkit.configuration.ConfigurationSection;
+
 import org.spout.infobjects.exception.LoadingException;
 
 /**
@@ -41,5 +42,5 @@ public interface ConfigurationLoadable {
 	 * @param properties The node from which to load the properties
 	 * @throws LoadingException If the loading fails
 	 */
-	public void load(ConfigurationNode properties) throws LoadingException;
+	public void load(ConfigurationSection properties) throws LoadingException;
 }

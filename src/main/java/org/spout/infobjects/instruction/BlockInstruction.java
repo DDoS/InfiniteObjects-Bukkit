@@ -28,7 +28,8 @@ package org.spout.infobjects.instruction;
 
 import java.util.Random;
 
-import org.spout.api.util.config.ConfigurationNode;
+import org.bukkit.configuration.ConfigurationSection;
+
 import org.spout.infobjects.IWGO;
 import org.spout.infobjects.exception.InstructionLoadingException;
 import org.spout.infobjects.material.MaterialSetter;
@@ -69,19 +70,19 @@ public class BlockInstruction extends Instruction {
 	 * @throws InstructionLoadingException If the loading fails
 	 */
 	@Override
-	public void load(ConfigurationNode properties) throws InstructionLoadingException {
+	public void load(ConfigurationSection properties) throws InstructionLoadingException {
 		final IWGO iwgo = getIWGO();
-		final ConfigurationNode positionNode = properties.getNode("position");
-		setX(ValueParser.parse(positionNode.getNode("x").getString(), iwgo, this));
-		setY(ValueParser.parse(positionNode.getNode("y").getString(), iwgo, this));
-		setZ(ValueParser.parse(positionNode.getNode("z").getString(), iwgo, this));
-		final MaterialSetter material = iwgo.getMaterialSetter(properties.getNode("material").getString());
+		final ConfigurationSection positionNode = properties.getConfigurationSection("position");
+		setX(ValueParser.parse(positionNode.getString("x"), iwgo, this));
+		setY(ValueParser.parse(positionNode.getString("y"), iwgo, this));
+		setZ(ValueParser.parse(positionNode.getString("z"), iwgo, this));
+		final MaterialSetter material = iwgo.getMaterialSetter(properties.getString("material"));
 		if (material == null) {
-			throw new InstructionLoadingException("Material setter \"" + properties.getNode("material").getString()
+			throw new InstructionLoadingException("Material setter \"" + properties.getString("material")
 					+ "\" does not exist");
 		}
 		setMaterialSetter(material);
-		setOuter(Boolean.parseBoolean(properties.getNode("outer").getString()));
+		setOuter(properties.getBoolean("outer"));
 	}
 
 	/**

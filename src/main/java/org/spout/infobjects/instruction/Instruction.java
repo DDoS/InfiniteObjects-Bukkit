@@ -31,7 +31,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
 
-import org.spout.api.util.config.ConfigurationNode;
+import org.bukkit.configuration.ConfigurationSection;
+
 import org.spout.infobjects.IWGO;
 import org.spout.infobjects.exception.InstructionLoadingException;
 import org.spout.infobjects.util.ConfigurationLoadable;
@@ -89,7 +90,7 @@ public abstract class Instruction implements ConfigurationLoadable, VariableSour
 	 * @throws InstructionLoadingException If the loading fails
 	 */
 	@Override
-	public abstract void load(ConfigurationNode properties) throws InstructionLoadingException;
+	public abstract void load(ConfigurationSection properties) throws InstructionLoadingException;
 
 	/**
 	 * Executes this instruction. Each instruction is called once by placement call, unless another

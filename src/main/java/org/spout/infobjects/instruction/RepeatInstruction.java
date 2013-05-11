@@ -30,7 +30,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-import org.spout.api.util.config.ConfigurationNode;
+import org.bukkit.configuration.ConfigurationSection;
 
 import org.spout.infobjects.IWGO;
 import org.spout.infobjects.exception.InstructionLoadingException;
@@ -131,23 +131,23 @@ public class RepeatInstruction extends Instruction {
 	 * @throws InstructionLoadingException If the loading fails
 	 */
 	@Override
-	public void load(ConfigurationNode properties) throws InstructionLoadingException {
+	public void load(ConfigurationSection properties) throws InstructionLoadingException {
 		final IWGO iwgo = getIWGO();
-		final Instruction toRepeat = iwgo.getInstruction(properties.getNode("repeat").getString());
+		final Instruction toRepeat = iwgo.getInstruction(properties.getString("repeat"));
 		if (toRepeat == null) {
 			throw new InstructionLoadingException("Repeat instruction \""
-					+ properties.getNode("repeat").getString() + "\" does not exist");
+					+ properties.getString("repeat") + "\" does not exist");
 		}
 		setRepeat(toRepeat);
-		setTimes(ValueParser.parse(properties.getNode("times").getString(), iwgo, this));
-		final ConfigurationNode incrementNode = properties.getNode("increment");
+		setTimes(ValueParser.parse(properties.getString("times"), iwgo, this));
+		final ConfigurationSection incrementNode = properties.getConfigurationSection("increment");
 		for (String key : incrementNode.getKeys(false)) {
 			final Variable increment = iwgo.getVariable(key);
 			if (increment == null) {
 				throw new InstructionLoadingException("Increment variable \"" + key + "\" does not exist");
 			}
 			addIncrementableValue(key, new IncrementableValue(increment.getRawValue(),
-					ValueParser.parse(incrementNode.getNode(key).getString(), iwgo, this)));
+					ValueParser.parse(incrementNode.getString(key), iwgo, this)));
 		}
 	}
 

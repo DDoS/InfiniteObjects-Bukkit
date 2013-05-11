@@ -26,9 +26,9 @@
  */
 package org.spout.infobjects.material;
 
-import org.spout.api.geo.World;
-import org.spout.api.material.BlockMaterial;
-import org.spout.api.util.config.ConfigurationNode;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 
 import org.spout.infobjects.util.IWGOUtils;
 
@@ -37,9 +37,9 @@ import org.spout.infobjects.util.IWGOUtils;
  */
 public class InnerOuterSetter extends MaterialSetter {
 	protected Material inner;
-	protected short innerData;
+	protected byte innerData;
 	protected Material outer;
-	protected short outerData;
+	protected byte outerData;
 
 	static {
 		MaterialSetter.register("inner-outer", InnerOuterSetter.class);
@@ -65,21 +65,13 @@ public class InnerOuterSetter extends MaterialSetter {
 	 * @param properties The property map as a string, string map
 	 */
 	@Override
-	public void load(ConfigurationNode properties) {
-		final ConfigurationNode innerMaterial = properties.getNode("inner");
-		inner = IWGOUtils.tryGetBlockMaterial(innerMaterial.getNode("material").getString());
-		if (innerMaterial.hasNode("data")) {
-			innerData = innerMaterial.getNode("data").getShort();
-		} else {
-			innerData = -1;
-		}
-		final ConfigurationNode outerMaterial = properties.getNode("outer");
-		outer = IWGOUtils.tryGetBlockMaterial(outerMaterial.getNode("material").getString());
-		if (outerMaterial.hasNode("data")) {
-			outerData = outerMaterial.getNode("data").getShort();
-		} else {
-			outerData = -1;
-		}
+	public void load(ConfigurationSection properties) {
+		final ConfigurationSection innerMaterial = properties.getConfigurationSection("inner");
+		inner = IWGOUtils.tryGetBlockMaterial(innerMaterial.getString("material"));
+		innerData = (byte) innerMaterial.getInt("data");
+		final ConfigurationSection outerMaterial = properties.getConfigurationSection("outer");
+		outer = IWGOUtils.tryGetBlockMaterial(outerMaterial.getString("material"));
+		outerData = (byte) outerMaterial.getInt("data");
 	}
 
 	/**
@@ -96,9 +88,9 @@ public class InnerOuterSetter extends MaterialSetter {
 	@Override
 	public void setMaterial(World world, int x, int y, int z, boolean outer) {
 		if (outer) {
-			world.getBlockAt(x, y, z).setTypeIdAndData(this.outer.getId(), (byte) (outerData == -1 ? 0 : outerData), true);
+			world.getBlockAt(x, y, z).setTypeIdAndData(this.outer.getId(), outerData, true);
 		} else {
-			world.getBlockAt(x, y, z).setTypeIdAndData(inner.getId(), (byte) (innerData == -1 ? 0 : innerData), true);
+			world.getBlockAt(x, y, z).setTypeIdAndData(inner.getId(), innerData, true);
 		}
 	}
 

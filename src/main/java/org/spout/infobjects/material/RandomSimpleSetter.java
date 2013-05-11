@@ -28,8 +28,8 @@ package org.spout.infobjects.material;
 
 import java.util.Random;
 
-import org.spout.api.geo.World;
-import org.spout.api.util.config.ConfigurationNode;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 
 import org.spout.infobjects.util.RandomOwner;
 
@@ -61,9 +61,9 @@ public class RandomSimpleSetter extends SimpleSetter implements RandomOwner {
 	 * @param properties The properties as a string, string map
 	 */
 	@Override
-	public void load(ConfigurationNode properties) {
+	public void load(ConfigurationSection properties) {
 		super.load(properties);
-		odd = properties.getNode("odd").getByte();
+		odd = (byte) properties.getInt("odd", 100);
 	}
 
 	/**

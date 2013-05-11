@@ -29,7 +29,8 @@ package org.spout.infobjects.instruction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import org.spout.api.util.config.ConfigurationNode;
+
+import org.bukkit.configuration.ConfigurationSection;
 
 import org.spout.infobjects.IWGO;
 import org.spout.infobjects.exception.InstructionLoadingException;
@@ -87,18 +88,18 @@ public class ShapeInstruction extends Instruction {
 	 * @throws InstructionLoadingException If the loading fails
 	 */
 	@Override
-	public void load(ConfigurationNode properties) throws InstructionLoadingException {
+	public void load(ConfigurationSection properties) throws InstructionLoadingException {
 		final IWGO iwgo = getIWGO();
-		final ConfigurationNode shapesNode = properties.getNode("shapes");
+		final ConfigurationSection shapesNode = properties.getConfigurationSection("shapes");
 		for (String key : shapesNode.getKeys(false)) {
 			try {
-				final ConfigurationNode shapeNode = shapesNode.getNode(key);
-				final Shape shape = Shape.newShape(shapeNode.getNode("type").getString(), iwgo);
-				shape.setSize(ValueParser.parse(IWGOUtils.toStringMap(shapeNode.getNode("size")), iwgo, this));
-				shape.setPosition(ValueParser.parse(IWGOUtils.toStringMap(shapeNode.getNode("position")), iwgo, this));
-				final MaterialSetter setter = iwgo.getMaterialSetter(shapeNode.getNode("material").getString());
+				final ConfigurationSection shapeNode = shapesNode.getConfigurationSection(key);
+				final Shape shape = Shape.newShape(shapeNode.getString("type"), iwgo);
+				shape.setSize(ValueParser.parse(IWGOUtils.toStringMap(shapeNode.getConfigurationSection("size")), iwgo, this));
+				shape.setPosition(ValueParser.parse(IWGOUtils.toStringMap(shapeNode.getConfigurationSection("position")), iwgo, this));
+				final MaterialSetter setter = iwgo.getMaterialSetter(shapeNode.getString("material"));
 				if (setter == null) {
-					throw new ShapeLoadingException("Material setter \"" + shapeNode.getNode("material").getString()
+					throw new ShapeLoadingException("Material setter \"" + shapeNode.getString("material")
 							+ "\" does not exist");
 				}
 				shape.setMaterialSetter(setter);

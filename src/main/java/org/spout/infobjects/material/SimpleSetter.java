@@ -26,9 +26,9 @@
  */
 package org.spout.infobjects.material;
 
-import org.spout.api.geo.World;
-import org.spout.api.material.BlockMaterial;
-import org.spout.api.util.config.ConfigurationNode;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 
 import org.spout.infobjects.util.IWGOUtils;
 
@@ -37,7 +37,7 @@ import org.spout.infobjects.util.IWGOUtils;
  */
 public class SimpleSetter extends MaterialSetter {
 	protected Material material;
-	protected short data;
+	protected byte data;
 
 	static {
 		MaterialSetter.register("simple", SimpleSetter.class);
@@ -59,13 +59,9 @@ public class SimpleSetter extends MaterialSetter {
 	 * @param properties The properties as a string, string map
 	 */
 	@Override
-	public void load(ConfigurationNode properties) {
-		material = IWGOUtils.tryGetBlockMaterial(properties.getNode("material").getString());
-		if (properties.hasNode("data")) {
-			data = properties.getNode("data").getShort();
-		} else {
-			data = -1;
-		}
+	public void load(ConfigurationSection properties) {
+		material = IWGOUtils.tryGetBlockMaterial(properties.getString("material"));
+		data = (byte) properties.getInt("data");
 	}
 
 	/**
@@ -80,7 +76,7 @@ public class SimpleSetter extends MaterialSetter {
 	 */
 	@Override
 	public void setMaterial(World world, int x, int y, int z, boolean outer) {
-		world.getBlockAt(x, y, z).setTypeIdAndData(material.getId(), (byte) (data == -1 ? 0 : data), true);
+		world.getBlockAt(x, y, z).setTypeIdAndData(material.getId(), data, true);
 	}
 
 	/**

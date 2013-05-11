@@ -26,14 +26,14 @@
  */
 package org.spout.infobjects.condition;
 
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import org.spout.api.geo.discrete.Point;
-import org.spout.api.material.BlockMaterial;
-import org.spout.api.util.config.ConfigurationNode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 
 import org.spout.infobjects.IWGO;
 import org.spout.infobjects.exception.ConditionLoadingException;
@@ -46,7 +46,7 @@ import org.spout.infobjects.value.ValueParser;
  * An implementation of {@link Condition}. This condition will check cuboid volumes.
  */
 public class CuboidCondition extends Condition {
-	private final Set<BlockMaterial> materials = new HashSet<BlockMaterial>();
+	private final Set<Material> materials = EnumSet.noneOf(Material.class);
 	private ConditionMode mode;
 	private Value x;
 	private Value y;
@@ -192,7 +192,7 @@ public class CuboidCondition extends Condition {
 	 *
 	 * @param material The material to add
 	 */
-	public void addBlockMaterial(BlockMaterial material) {
+	public void addBlockMaterial(Material material) {
 		materials.add(material);
 	}
 
@@ -201,7 +201,7 @@ public class CuboidCondition extends Condition {
 	 *
 	 * @param material The material to remove
 	 */
-	public void removeMaterial(BlockMaterial material) {
+	public void removeMaterial(Material material) {
 		materials.remove(material);
 	}
 
@@ -210,7 +210,7 @@ public class CuboidCondition extends Condition {
 	 *
 	 * @return The materials as a set
 	 */
-	public Set<BlockMaterial> getMaterials() {
+	public Set<Material> getMaterials() {
 		return materials;
 	}
 
@@ -222,11 +222,11 @@ public class CuboidCondition extends Condition {
 	 * @throws ConditionLoadingException If the loading fails
 	 */
 	@Override
-	public void load(ConfigurationNode properties) throws ConditionLoadingException {
-		setMode(ConditionMode.valueOf(properties.getNode("mode").getString().toUpperCase()));
-		setSize(ValueParser.parse(IWGOUtils.toStringMap(properties.getNode("size")), getIWGO()));
-		setPosition(ValueParser.parse(IWGOUtils.toStringMap(properties.getNode("position")), getIWGO()));
-		for (String name : properties.getNode("check").getStringList()) {
+	public void load(ConfigurationSection properties) throws ConditionLoadingException {
+		setMode(ConditionMode.valueOf(properties.getString("mode").toUpperCase()));
+		setSize(ValueParser.parse(IWGOUtils.toStringMap(properties.getConfigurationSection("size")), getIWGO()));
+		setPosition(ValueParser.parse(IWGOUtils.toStringMap(properties.getConfigurationSection("position")), getIWGO()));
+		for (String name : properties.getStringList("check")) {
 			addBlockMaterial(IWGOUtils.tryGetBlockMaterial(name));
 		}
 	}
@@ -247,7 +247,7 @@ public class CuboidCondition extends Condition {
 		for (int xx = 0; xx < sizeX; xx++) {
 			for (int yy = 0; yy < sizeY; yy++) {
 				for (int zz = 0; zz < sizeZ; zz++) {
-					final Location pos = iwgo.transform(px + xx, py + yy, pz + zz);
+					final Location pos = getIWGO().transform(px + xx, py + yy, pz + zz);
 					if (!mode.check(pos.getWorld().getBlockAt(pos).getType(), materials)) {
 						return false;
 					}

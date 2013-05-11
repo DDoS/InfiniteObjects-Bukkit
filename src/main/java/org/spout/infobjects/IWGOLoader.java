@@ -105,9 +105,15 @@ public class IWGOLoader {
 	public static IWGO loadIWGO(Configuration config, String source) throws IWGOLoadingException {
 		try {
 			final IWGO iwgo = new IWGO(config.getString("name"));
-			loadVariables(iwgo, config.getConfigurationSection("variables"), iwgo);
+			final ConfigurationSection variablesNode = config.getConfigurationSection("variables");
+			if (variablesNode != null) {
+				loadVariables(iwgo, variablesNode, iwgo);
+			}
 			loadMaterialSetters(iwgo, config.getConfigurationSection("setters"));
-			loadConditions(iwgo, config.getConfigurationSection("conditions"));
+			final ConfigurationSection conditionsNode = config.getConfigurationSection("conditions");
+			if (conditionsNode != null) {
+				loadConditions(iwgo, conditionsNode);
+			}
 			loadInstructions(iwgo, config.getConfigurationSection("instructions"));
 			iwgo.randomize();
 			return iwgo;
@@ -149,8 +155,8 @@ public class IWGOLoader {
 			try {
 				final ConfigurationSection setterNode = settersNode.getConfigurationSection(key);
 				final MaterialSetter setter =
-						MaterialSetter.newMaterialSetter(setterNode.getNode("type").getString(), key);
-				setter.load(setterNode.getNode("properties"));
+						MaterialSetter.newMaterialSetter(setterNode.getString("type"), key);
+				setter.load(setterNode.getConfigurationSection("properties"));
 				iwgo.addMaterialSetter(setter);
 			} catch (Exception ex) {
 				throw new MaterialSetterLoadingException(key, ex);
@@ -171,9 +177,12 @@ public class IWGOLoader {
 			try {
 				final ConfigurationSection instructionNode = instructionsNode.getConfigurationSection(key);
 				final Instruction instruction =
-						Instruction.newInstruction(instructionNode.getNode("type").getString(), iwgo, key);
-				loadVariables(instruction, instructionNode.getNode("variables"), iwgo, instruction);
-				instruction.load(instructionNode.getNode("properties"));
+						Instruction.newInstruction(instructionNode.getString("type"), iwgo, key);
+				final ConfigurationSection variablesNode = instructionNode.getConfigurationSection("variables");
+				if (variablesNode != null) {
+					loadVariables(instruction, variablesNode, iwgo, instruction);
+				}
+				instruction.load(instructionNode.getConfigurationSection("properties"));
 				iwgo.addInstruction(instruction);
 			} catch (Exception ex) {
 				throw new InstructionLoadingException(key, ex);
@@ -192,9 +201,9 @@ public class IWGOLoader {
 			throws ConditionLoadingException {
 		for (String key : conditionsNode.getKeys(false)) {
 			try {
-				final ConfigurationNode conditionNode = conditionsNode.getNode(key);
-				final Condition condition = Condition.newCondition(conditionNode.getNode("type").getString(), iwgo);
-				condition.load(conditionNode.getNode("properties"));
+				final ConfigurationSection conditionNode = conditionsNode.getConfigurationSection(key);
+				final Condition condition = Condition.newCondition(conditionNode.getString("type"), iwgo);
+				condition.load(conditionNode.getConfigurationSection("properties"));
 				iwgo.addCondition(condition);
 			} catch (Exception ex) {
 				throw new ConditionLoadingException(key, ex);
@@ -203,8 +212,8 @@ public class IWGOLoader {
 	}
 
 	/**
-	 * Logs iWGO loading exceptions to the Bukkit default logger (as defined by {@link org.bukkit.Bukkit#getLogger()})
-	 * in a user friendly manner.
+	 * Logs iWGO loading exceptions to the Bukkit default logger (as defined by
+	 * {@link org.bukkit.Bukkit#getLogger()}) in a user friendly manner.
 	 *
 	 * @param exception The exception to log
 	 */
@@ -222,7 +231,6 @@ public class IWGOLoader {
 		logger.log(Level.WARNING, "------------------------");
 		logger.log(Level.WARNING, "| IWGO LOADING FAILURE |");
 		logger.log(Level.WARNING, "------------------------");
-		exception.printStackTrace();
 		Throwable cause = exception;
 		int tabCount = 0;
 		do {
