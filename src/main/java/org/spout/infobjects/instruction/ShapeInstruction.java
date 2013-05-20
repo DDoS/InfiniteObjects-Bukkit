@@ -97,12 +97,11 @@ public class ShapeInstruction extends Instruction {
 	 */
 	@Override
 	public void load(ConfigurationSection properties) throws InstructionLoadingException {
-		final IWGO iwgo = getIWGO();
 		final ConfigurationSection shapesNode = properties.getConfigurationSection("shapes");
 		for (String key : shapesNode.getKeys(false)) {
 			try {
 				final ConfigurationSection shapeNode = shapesNode.getConfigurationSection(key);
-				final Shape shape = Shape.newShape(shapeNode.getString("type"), iwgo);
+				final Shape shape = Shape.newShape(shapeNode.getString("type"), this);
 				shape.load(shapeNode.getConfigurationSection("properties"));
 				addShape(shape);
 			} catch (Exception ex) {

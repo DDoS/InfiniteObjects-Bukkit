@@ -33,6 +33,7 @@ import org.bukkit.configuration.ConfigurationSection;
 
 import org.spout.infobjects.IWGO;
 import org.spout.infobjects.exception.ShapeLoadingException;
+import org.spout.infobjects.instruction.Instruction;
 import org.spout.infobjects.material.MaterialSetter;
 import org.spout.infobjects.util.ConfigurationLoadable;
 import org.spout.infobjects.util.IWGOUtils;
@@ -42,33 +43,33 @@ import org.spout.infobjects.value.Value;
 import org.spout.infobjects.value.ValueParser;
 
 /**
- * An abstract shape. This class provides the parent iWGO, position coordinate
+ * An abstract shape. This class provides the parent instruction, position coordinate
  * {@link org.spout.infobjects.value.Value}s and the material setter.
  */
 public abstract class Shape implements ConfigurationLoadable, RandomOwner {
-	private static final TypeFactory<Shape> SHAPES = new TypeFactory<Shape>(IWGO.class);
-	private final IWGO iwgo;
+	private static final TypeFactory<Shape> SHAPES = new TypeFactory<Shape>(Instruction.class);
+	private final Instruction instruction;
 	private Value x;
 	private Value y;
 	private Value z;
 	private MaterialSetter setter;
 
 	/**
-	 * Construct a new iWGO from its parent iWGO.
+	 * Construct a new iWGO from its parent instruction.
 	 *
-	 * @param iwgo The parent iWGO
+	 * @param instruction The parent instruction
 	 */
-	public Shape(IWGO iwgo) {
-		this.iwgo = iwgo;
+	public Shape(Instruction instruction) {
+		this.instruction = instruction;
 	}
 
 	/**
-	 * Gets the parent iWGO.
+	 * Gets the parent instruction.
 	 *
-	 * @return The parent iWGO
+	 * @return The parent instruction
 	 */
-	public IWGO getIWGO() {
-		return iwgo;
+	public Instruction getInstruction() {
+		return instruction;
 	}
 
 	/**
@@ -197,8 +198,9 @@ public abstract class Shape implements ConfigurationLoadable, RandomOwner {
 	 */
 	@Override
 	public void load(ConfigurationSection properties) throws ShapeLoadingException {
-		setSize(ValueParser.parse(IWGOUtils.toStringMap(properties.getConfigurationSection("size")), iwgo));
-		setPosition(ValueParser.parse(IWGOUtils.toStringMap(properties.getConfigurationSection("position")), iwgo));
+		final IWGO iwgo = instruction.getIWGO();
+		setSize(ValueParser.parse(IWGOUtils.toStringMap(properties.getConfigurationSection("size")), instruction, iwgo));
+		setPosition(ValueParser.parse(IWGOUtils.toStringMap(properties.getConfigurationSection("position")), instruction, iwgo));
 		final MaterialSetter materialSetter = iwgo.getMaterialSetter(properties.getString("material"));
 		if (materialSetter == null) {
 			throw new ShapeLoadingException("Material setter \"" + properties.getString("material")
@@ -264,10 +266,10 @@ public abstract class Shape implements ConfigurationLoadable, RandomOwner {
 	 * Constructs a new instance of a shape of the desired type.
 	 *
 	 * @param type The type of the shape, as used in the iWGO configuration
-	 * @param iwgo The parent iWGO to be passed to the constructor
+	 * @param instruction The parent instruction to be passed to the constructor
 	 * @return The new shape instance
 	 */
-	public static Shape newShape(String type, IWGO iwgo) {
-		return SHAPES.newInstance(type, iwgo);
+	public static Shape newShape(String type, Instruction instruction) {
+		return SHAPES.newInstance(type, instruction);
 	}
 }

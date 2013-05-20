@@ -35,8 +35,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * Commands for the InfiniteObjects plugin. These are mostly designed for
- * testing and administration.
+ * Commands for the InfiniteObjects plugin. These are mostly designed for testing and
+ * administration.
  */
 public class IWGOCommands implements CommandExecutor {
 	/**
@@ -84,6 +84,7 @@ public class IWGOCommands implements CommandExecutor {
 			if (force || iwgo.canPlaceObject(world, x, y, z)) {
 				iwgo.placeObject(world, x, y, z);
 				tell(sender, "iWGO placed successfully.");
+				iwgo.randomize();
 			} else {
 				warn(sender, "Can't place the iWGO here.");
 			}

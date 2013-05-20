@@ -28,14 +28,14 @@ package org.spout.infobjects.shape;
 
 import java.util.Map;
 import java.util.Random;
-import org.bukkit.Location;
 
-import org.bukkit.util.BlockIterator;
+import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
-import org.spout.infobjects.IWGO;
 import org.spout.infobjects.exception.ShapeLoadingException;
+import org.spout.infobjects.instruction.Instruction;
 import org.spout.infobjects.material.MaterialSetter;
+import org.spout.infobjects.util.BlockIterator;
 import org.spout.infobjects.util.RandomOwner;
 import org.spout.infobjects.value.Value;
 
@@ -52,12 +52,12 @@ public class Line extends Shape {
 	}
 
 	/**
-	 * Constructs a new line shape from the parent iWGO.
+	 * Constructs a new line shape from the parent instruction.
 	 *
-	 * @param iwgo The parent iWGO
+	 * @param instruction The parent instruction
 	 */
-	public Line(IWGO iwgo) {
-		super(iwgo);
+	public Line(Instruction instruction) {
+		super(instruction);
 	}
 
 	/**
@@ -93,12 +93,10 @@ public class Line extends Shape {
 	 */
 	@Override
 	public void draw() {
-		final Location position = getIWGO().transform(getX().getValue(), getY().getValue(), getZ().getValue());
-		final Vector start = position.toVector();
-		final Vector size = new Vector(lengthX.getValue(), lengthY.getValue(), lengthZ.getValue());
-		final double distance = size.length();
-		final BlockIterator line = new BlockIterator(position.getWorld(), start, size.multiply(1 / distance), 0, (int) distance);
+		final Location start = getInstruction().getIWGO().transform(getX().getValue(), getY().getValue(), getZ().getValue());
+		final BlockIterator line = new BlockIterator(start, start.clone().add(lengthX.getValue(), lengthY.getValue(), lengthZ.getValue()));
 		final MaterialSetter materialSetter = getMaterialSetter();
+		materialSetter.setMaterial(start, true);
 		while (line.hasNext()) {
 			materialSetter.setMaterial(line.next().getLocation(), true);
 		}

@@ -171,19 +171,6 @@ public class IWGO implements VariableSource, RandomOwner {
 	 * @return The absolute coordinates plus the world
 	 */
 	public Location transform(double xx, double yy, double zz) {
-		return transform((int) Math.floor(xx), (int) Math.floor(yy), (int) Math.floor(zz));
-	}
-
-	/**
-	 * Transforms the relative integer coordinates to absolute for the iWGO and adds the world to
-	 * the position data.
-	 *
-	 * @param xx The relative x coordinate
-	 * @param yy The relative y coordinate
-	 * @param zz The relative z coordinate
-	 * @return The absolute coordinates plus the world
-	 */
-	public Location transform(int xx, int yy, int zz) {
 		return new Location(world, xx + position.getX(), yy + position.getY(), zz + position.getZ());
 	}
 

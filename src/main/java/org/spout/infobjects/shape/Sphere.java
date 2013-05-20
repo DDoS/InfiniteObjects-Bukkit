@@ -31,6 +31,7 @@ import java.util.Random;
 
 import org.spout.infobjects.IWGO;
 import org.spout.infobjects.exception.ShapeLoadingException;
+import org.spout.infobjects.instruction.Instruction;
 import org.spout.infobjects.material.MaterialSetter;
 import org.spout.infobjects.util.RandomOwner;
 import org.spout.infobjects.value.Value;
@@ -48,12 +49,12 @@ public class Sphere extends Shape {
 	}
 
 	/**
-	 * Constructs a new sphere shape from the parent iWGO.
+	 * Constructs a new sphere shape from the parent instruction.
 	 *
-	 * @param iwgo The parent iWGO
+	 * @param iwgo The parent instruction
 	 */
-	public Sphere(IWGO iwgo) {
-		super(iwgo);
+	public Sphere(Instruction instruction) {
+		super(instruction);
 	}
 
 	/**
@@ -99,7 +100,7 @@ public class Sphere extends Shape {
 		final int ceilRadiusX = (int) Math.ceil(rx);
 		final int ceilRadiusY = (int) Math.ceil(ry);
 		final int ceilRadiusZ = (int) Math.ceil(rz);
-		final IWGO iwgo = getIWGO();
+		final IWGO iwgo = getInstruction().getIWGO();
 		final MaterialSetter setter = getMaterialSetter();
 		double nextXn = 0;
 		forX:
