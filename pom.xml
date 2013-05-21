@@ -37,22 +37,10 @@
 
 	<!-- Source code access -->
 	<scm>
-		<developerConnection>scm:git:git@github.com:VanillaDev/InfObjects.git</developerConnection>
-		<connection>scm:git:git://github.com/VanillaDev/InfObjects.git</connection>
-		<url>https://github.com/VanillaDev/InfObjects</url>
+		<developerConnection>scm:git:git@github.com:DDoS/InfiniteObjects-Bukkit.git</developerConnection>
+		<connection>scm:git:git://github.com/DDoS/InfiniteObjects-Bukkit.git</connection>
+		<url>https://github.com/DDoS/InfiniteObjects-Bukkit.git</url>
 	</scm>
-
-	<!-- Build server -->
-	<ciManagement>
-		<system>jenkins</system>
-		<url>http://build.spout.org/job/InfObjects</url>
-	</ciManagement>
-
-	<!-- Issue management -->
-	<issueManagement>
-		<system>jira</system>
-		<url>http://issues.spout.org/browse/InfObjects</url>
-	</issueManagement>
 
 	<!-- Dependency repositories -->
 	<repositories>
@@ -77,20 +65,6 @@
 			<url>http://repo.spout.org</url>
 		</pluginRepository>
 	</pluginRepositories>
-
-	<!-- Distribution management -->
-	<distributionManagement>
-		<!-- Publish releases here -->
-		<repository>
-			<id>spout-releases</id>
-			<url>http://nexus.spout.org/content/repositories/releases</url>
-		</repository>
-		<!-- Publish snapshots here -->
-		<snapshotRepository>
-			<id>spout-snapshots</id>
-			<url>http://nexus.spout.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
 
 	<!-- Build dependencies -->
 	<dependencies>
