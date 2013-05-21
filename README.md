@@ -1,14 +1,17 @@
-InfObjects-Bukkit
+InfiniteObjects-Bukkit
 ==========
 An experimental project for user definable world generator objects using a script like file format based on YAML syntax.
 
 This is the unofficial Bukkit port of the project.
 
 ## The License
-InfObjects is licensed under the [GNU Lesser General Public License Version 3][License], but with a provision that files are released under the MIT license 180 days after they are published. Please see the `LICENSE.txt` file for details.
+InfiniteObjects-Bukkit is licensed under the [GNU Lesser General Public License Version 3][License], but with a provision that files are released under the MIT license 180 days after they are published. Please see the `LICENSE.txt` file for details.
 
 Copyright (c) 2011-2012, SpoutDev <<http://www.spout.org/>>  
 [![Spout][Author Logo]][Website]
+
+## Javadoc
+View the latest [Javadoc][Javadoc].
 
 ## Compiling the Source
 InfObjects-Bukkit uses Maven to handle its dependencies.
@@ -31,5 +34,6 @@ InfObjects-Bukkit uses Maven to handle its dependencies.
 **Please follow the above conventions if you want your pull request(s) accepted.**
 
 [Author Logo]: http://cdn.spout.org/img/logo/spout_305x135.png
+[Javadoc]: http://jd.spout.org/infiniteobjects/
 [License]: http://www.spout.org/SpoutDevLicenseV1.txt
 [Website]: http://www.spout.org
